@@ -1,8 +1,6 @@
 package cn.zqq;
 
 import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.BitstreamException;
-import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 import java.io.*;
@@ -14,10 +12,12 @@ public class PlayerMusic {
 
     public static void main(String[] args) {
         AtomicBoolean next = new AtomicBoolean(false);
-        File files = new File("f:/movies/music");
-        File[] mp3s = files.listFiles(pathname -> pathname.getName().toLowerCase().endsWith("mp3"));
+        File files = new File("/Volumes/ext/music");
+        File[] mp3s = files.listFiles(e -> e.getName().toLowerCase().endsWith("mp3")&&!e.getName().startsWith("._"));
         if (mp3s != null) {
             System.out.println("加载歌曲数量：" + mp3s.length);
+        }else {
+            System.exit(0);
         }
         AtomicInteger songTime = new AtomicInteger();
         new Thread(() -> {
@@ -46,7 +46,7 @@ public class PlayerMusic {
                         ms = Math.round((int) bitstream.readFrame().total_ms((int) mp3s[num].length()) / 1000);
                         songTime.set(ms);
                     }
-                } catch (BitstreamException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 System.out.println("时长#" + minusFormat(ms));
@@ -55,7 +55,7 @@ public class PlayerMusic {
                     if (stream != null) {
                         player = new Player(stream);
                     }
-                } catch (JavaLayerException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Player finalPlayer = player;
@@ -82,7 +82,7 @@ public class PlayerMusic {
                         }
                         try {
                             Thread.sleep(900);
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -92,7 +92,7 @@ public class PlayerMusic {
                         player.play();
 
                     }
-                } catch (JavaLayerException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 if (player != null && player.isComplete()) {
@@ -115,7 +115,7 @@ public class PlayerMusic {
                         System.out.println("\nbye");
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
